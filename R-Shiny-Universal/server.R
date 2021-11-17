@@ -8,6 +8,8 @@
 #
 
 library(shiny)
+library(tidyverse)
+data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim = " ")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
