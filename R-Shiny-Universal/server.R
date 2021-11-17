@@ -12,17 +12,25 @@ library(tidyverse)
 data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim = " ")
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output,session) {
 
-    output$distPlot <- renderPlot({
-
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
+    output$Datatable <- renderTable({
+        if(input$month == FALSE & input$age == FALSE){
+            data %>% filter(year == input$year)
+        }
+        else if(input$month == FALSE & input$age == TRUE){
+            data %>% filter(year == input$year & age_rating == input$age_rating)
+        }
+        else if(input$month == TRUE & input$age == FALSE){
+            data %>% filter(year == input$year & month == input$year_month)
+        }
+        else if(input$month == TRUE & input$age == TRUE){
+            data %>% filter(year == input$year & month == input$year_month & age_rating == input$age_rating)
+        }
+        
+            
+        
+        
     })
 
 })

@@ -9,9 +9,9 @@
 
 library(shiny)
 library(tidyverse)
+library(shinyWidgets)
 
 data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim = " ")
-
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(theme = "style.css",
                   div(style = "padding: 1px 0px; width: '100%'",
@@ -49,8 +49,38 @@ shinyUI(fluidPage(theme = "style.css",
                                      type = "tabs",
                                      
                                      tabPanel(
-                                         "Select Animes You Like"
+                                         "Select Animes You Like",
+                                           sidebarPanel(
+                                             h3("Select the anime based on Year:"),
+                                             pickerInput(inputId = "year",
+                                                         label = "Years",
+                                                         choices = c(2010:2022),
+                                                         selected = 2010
+                                             ),
+                                             checkboxInput("month", 
+                                                           label = tags$span(style="color: red;","select by month within year"), 
+                                                           value = FALSE, 
+                                                           width = NULL),
+                                             conditionalPanel(condition = "input.month",
+                                                              pickerInput("year_month",
+                                                                          "Months", 
+                                                                          choices = c(1:12),
+                                                                          selected = 1)),
+                                             checkboxInput("age", 
+                                                           label = tags$span(style="color: red;","select by age rating guide"), 
+                                                           value = FALSE, 
+                                                           width = NULL),
+                                             conditionalPanel(condition = "input.age",
+                                                              radioButtons(inputId = "age_rating",
+                                                         label = "Age Rating",
+                                                         choices = c("G", "PG", "R"),
+                                                         selected = "G"
+                                             ))
+                                             
                                      ),
+                                     mainPanel(
+                                       tableOutput("Datatable")
+                                     )),
                                      tabPanel(
                                          "Based on criterion"
                                      ),
@@ -84,7 +114,7 @@ shinyUI(fluidPage(theme = "style.css",
                                      ),
                                      tabPanel(
                                          "Prediction"
-                                     ),
+                                     )
                                  )
                              )
                              
@@ -93,7 +123,7 @@ shinyUI(fluidPage(theme = "style.css",
                              
                              
                              
-                             ),
+                             )
                   
                                        
                       
@@ -102,3 +132,5 @@ shinyUI(fluidPage(theme = "style.css",
     # Application title
    
 ))
+
+
