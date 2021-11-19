@@ -10,6 +10,9 @@
 library(shiny)
 library(tidyverse)
 library(shinyWidgets)
+library(factoextra)
+library(shinydashboard)
+
 
 data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim =" ")
 # Define UI for application that draws a histogram
@@ -118,8 +121,16 @@ shinyUI(fluidPage(theme = "style.css",
                                      
                                  tabPanel(
                                      "Table Summaries",
-                                     h3("Get summary statistics based on year"),
-                                     sidebarPanel(
+                                  dashboardPage(
+                                    dashboardHeader(title = "Table Summaries"),
+                                    dashboardSidebar(),
+                                    dashboardBody(
+                                     fluidRow(
+                                       box(
+                                       title = "Get summary statistics based on year", 
+                                       status = "warning",
+                                       solidHeader = TRUE,
+                                       collapsible = TRUE,
                                        radioButtons(inputId = "year2",
                                                    label = "Years",
                                                    choices = c(2010:2022),
@@ -127,27 +138,61 @@ shinyUI(fluidPage(theme = "style.css",
                                        checkboxInput("percent1", 
                                                      label = tags$span(style="color: red;","see percentage of year with summary"), 
                                                      value = FALSE, 
-                                                     width = NULL),
-                                       br(),
-                                       br(),
-                                       h3("Get summary statistics based on age rating"),
-                                       radioButtons(inputId = "age_rating2",
-                                                    label = "Age Rating",
-                                                    choices = c("G", "PG", "R"),
-                                                    selected = "G"),
-                                       checkboxInput("percent2", 
-                                                     label = tags$span(style="color: red;","see percentage of age_rating with summary"), 
-                                                     value = FALSE, 
-                                                     width = NULL)
+                                                     width = NULL)),
+                                       box(
+                                         title = "Summary Stats based on year",
+                                         status = "warning",
+                                         solidHeader = TRUE,
+                                         dataTableOutput("Datatable3")
+                                       )
                                      ),
-                                     mainPanel(
-                                       dataTableOutput("Datatable3"),
-                                       br(),
-                                       br(),
-                                       
-                                       dataTableOutput("Datatable4")
-                                     )
-                                 ),
+                                     
+                                     fluidRow(
+                                       box(
+                                         title = "Get summary statistics based on age rating", 
+                                         status = "primary", 
+                                         solidHeader = TRUE,
+                                         collapsible = TRUE,
+                                         radioButtons(inputId = "age_rating2",
+                                                      label = "Age Rating",
+                                                      choices = c("G", "PG", "R"),
+                                                      selected = "G"),
+                                         checkboxInput("percent2", 
+                                                       label = tags$span(style="color: red;","see percentage of age_rating with summary"), 
+                                                       value = FALSE, 
+                                                       width = NULL)),
+                                       box(
+                                         title = "Summary Stats based on age rating",
+                                         status = "primary",
+                                         solidHeader = TRUE,
+                                         dataTableOutput("Datatable4")
+                                       )
+                                     ),
+                                     
+                                     
+                                     fluidRow(
+                                       box(
+                                         title = "Get summary statistics based on number of episodes", 
+                                         status = "success", 
+                                         solidHeader = TRUE,
+                                         collapsible = TRUE,
+                                         radioButtons(inputId = "episodes",
+                                                      label = "Episodes Category",
+                                                      choices = c("Episodes >= 15", "15>Episodes >=8", "8 > Episodes","missing values"),
+                                                      selected = "15>Episodes >=8"),
+                                         "note that missing episode number is denoted as value 0 for better interpretation",
+                                         checkboxInput("percent3", 
+                                                       label = tags$span(style="color: red;","see percentage of Episode Category with summary"), 
+                                                       value = FALSE, 
+                                                       width = NULL)),
+                                       box(
+                                         title = "Summary Stats based on number of episodes",
+                                         status = "success",
+                                         solidHeader = TRUE,
+                                         dataTableOutput("Datatable5")
+                                       )
+                                     )))),
+
                                  tabPanel(
                                      "Visualizations",
                                      sidebarPanel(
@@ -157,7 +202,46 @@ shinyUI(fluidPage(theme = "style.css",
                                                    min = 2010,
                                                    max = 2022,
                                                    step = 1,
-                                                   value = 2010),
+                                                   value = 2010), 
+                                       h4("by hitting the check box below, you could see the k-mean clustering of two variables: user count and rating,
+                                           and the original values are scaled"),
+                                       checkboxInput("kmeans", 
+                                                     label = tags$span(style="color: blue;","try k-means clustering based on user count and rating"), 
+                                                     value = FALSE, 
+                                                     width = NULL),
+                                      
+                                       conditionalPanel(condition = "input.kmeans",
+                                                        sliderInput("kmean",
+                                                                    "Select K",
+                                                                    min = 2,
+                                                                    max = 6,
+                                                                    step = 1,
+                                                                    value = 2)),
+                                       h4("by hitting the check box below, you could see the counts for the top number of popularity rank you selected,
+                                          the plot is exploring the how episode numbers could possibly affect the popularity rank within each cluster 
+                                          generated by the k mean clustering for each year"),
+                                       tags$span(style="color: red;","note that missing episode number is denoted as value 0 for better interpretation"),
+                                       checkboxInput("kmeans_explore", 
+                                                     label = tags$span(style="color: blue;","explore more based on clustering?"), 
+                                                     value = FALSE, 
+                                                     width = NULL),
+                                       conditionalPanel(condition = "input.kmeans_explore",
+                                                        pickerInput("popularity",
+                                                                    "Top Popularity rank based on the cluster",
+                                                                    choices = c(101,201,501,999,4999,9999),
+                                                                    selected = 101)),
+                                       
+                                       
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       h4("Plot based on month for each year"),
                                        sliderInput("month2",
                                                    "Months",
                                                    min = 1,
@@ -167,8 +251,16 @@ shinyUI(fluidPage(theme = "style.css",
                                          
                                        ),
                                      mainPanel(
+                                       textOutput("text"),
                                        plotOutput("plotyear"),
-                                       plotOutput("plotmonth")
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       br(),
+                                       plotOutput("plotmonth"),
+                                       
                                      )
                                      )
                                  )
