@@ -123,7 +123,9 @@ shinyUI(fluidPage(theme = "style.css",
                                      "Table Summaries",
                                   dashboardPage(
                                     dashboardHeader(title = "Table Summaries"),
-                                    dashboardSidebar(),
+                                    dashboardSidebar(
+                                      "This is the table summaries"
+                                    ),
                                     dashboardBody(
                                      fluidRow(
                                        box(
@@ -259,7 +261,7 @@ shinyUI(fluidPage(theme = "style.css",
                                        br(),
                                        br(),
                                        br(),
-                                       plotOutput("plotmonth"),
+                                       plotOutput("plotmonth")
                                        
                                      )
                                      )
@@ -271,8 +273,71 @@ shinyUI(fluidPage(theme = "style.css",
                                  tabsetPanel(
                                      type = "tabs",
                                      tabPanel(
-                                         "Modeling Info"
-                                     ),
+                                         "Modeling Info",
+                                        dashboardPage(
+                                           dashboardHeader(title = "Modeling Information"),
+                                           dashboardSidebar(
+                                             "This is the Modeling Information"
+                                           ),
+                                           dashboardBody(
+                                             fluidRow(
+                                               column(
+                                                 box(
+                                               title = "Model 1", 
+                                               status = "warning",
+                                               solidHeader = TRUE,
+                                               collapsible = FALSE,
+                                               "probably multiple regression method",
+                                               "Use the multiple linear regression method to fit the response varaible rating",
+                                               "we fit the response using the subset of predictors",
+                                               withMathJax(),
+                                               helpText("The modeling equation for the multiple linear regression is
+                                                        $$Y = \\beta0+\\beta1*X1+\\beta2*X2+\\beta3*X3+\\beta4*X4+\\beta5*X5...$$",
+                                               "notice that here the multiple linear regression model have simple interpretation of 
+                                               relationship between X's and Y, the order of X's is 1",
+                                               "however, this method have some drawbacks:
+                                               We are not including the synergy effect(interaction effect) and higher order terms of X's 
+                                               in the model, we lose the interpretation of additive effects, and linear regression have linearity
+                                               assumptions which will require us to transfrom Y or X if applicable"),
+                                               
+                                              
+                                               width = 12),width = 4
+                                               ),
+                                               column(
+                                             box(
+                                               title = "Model 2", 
+                                               status = "primary",
+                                               solidHeader = TRUE,
+                                               collapsible = FALSE,
+                                               withMathJax(),
+                                               "random forest regression method",
+                                               "random forest regression method uses resampling method, like bootstrapping methods to 
+                                               generate the data sets based on the original dataset(allow the repeatness of the observations)
+                                               And then we fit the model using predictors by random forest regression. Random forest regression
+                                               is a de-correlate methods, because under the setting of tree method, if we use same predicotrs all the time,
+                                               the trees will be highly correlated. Under the setting of random forest method, we randomly select m predictors 
+                                               to fit the model, here the m will be chose by k-fold cross validation so that the averaged mean square error will be 
+                                               minimized",
+                                               helpText("Algorithms that can explain the random forest regression:
+                                               Step 1: Random sample with replacement, $$b = 1,...,B$$
+                                               step 2: train regression tree $$f_b$$ on the sample data
+                                               step 3: use the k-fold cross validation to determine the value of m to use, notice that m is usually $$\\sqrt(p)$$ or $$\\frac{p}{3}$$ p is the total predictors"),
+                                               helpText("step 4: the predictions for sampled $$x's$$ will be averaged to reduce the test error, $$estimated f = \\frac{1}{B}\\cdot\\sum_{b=1}^B f_b$$"),
+                                               width = 12),width = 4
+                                               ),
+                                              column(
+                                                box(
+                                               title = "Model 3", 
+                                               status = "success",
+                                               solidHeader = TRUE,
+                                               collapsible = FALSE,
+                                               "dfhiousdhauigfhiua",width = 12),width = 4
+                                              )
+                                             
+                                             )
+                                             
+                                        
+                                     ))),
                                      tabPanel(
                                          "Model Fitting"
                                      ),
