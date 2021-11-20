@@ -277,7 +277,9 @@ shinyUI(fluidPage(theme = "style.css",
                                         dashboardPage(
                                            dashboardHeader(title = "Modeling Information"),
                                            dashboardSidebar(
-                                             "This is the Modeling Information"
+                                             "This is the Modeling Information:
+                                             we want to fit the dataset using predictive models. Overall speaking, we want to model to have less MSE(mean square error)
+                                             MSE is measured by the bias + variance + irreducible error."
                                            ),
                                            dashboardBody(
                                              fluidRow(
@@ -287,18 +289,23 @@ shinyUI(fluidPage(theme = "style.css",
                                                status = "warning",
                                                solidHeader = TRUE,
                                                collapsible = FALSE,
-                                               "probably multiple regression method",
+                                               "Multiple Regression Method",
+                                               br(),
                                                "Use the multiple linear regression method to fit the response varaible rating",
+                                               br(),
                                                "we fit the response using the subset of predictors",
+                                               br(),
                                                withMathJax(),
-                                               helpText("The modeling equation for the multiple linear regression is
-                                                        $$Y = \\beta0+\\beta1*X1+\\beta2*X2+\\beta3*X3+\\beta4*X4+\\beta5*X5...$$",
+                                               "The modeling equation for the multiple linear regression is
+                                                        $$Y = \\beta_0+\\beta_1*X_1+\\beta_2*X_2+\\beta_3*X_3+\\beta_4*X_4+\\beta_5*X_5...$$",
                                                "notice that here the multiple linear regression model have simple interpretation of 
                                                relationship between X's and Y, the order of X's is 1",
-                                               "however, this method have some drawbacks:
-                                               We are not including the synergy effect(interaction effect) and higher order terms of X's 
+                                               br(),
+                                               "however, this method have some drawbacks:",
+                                               br(),
+                                               "We are not including the synergy effect(interaction effect) and higher order terms of X's 
                                                in the model, we lose the interpretation of additive effects, and linear regression have linearity
-                                               assumptions which will require us to transfrom Y or X if applicable"),
+                                               assumptions which will require us to transfrom Y or X if applicable",
                                                
                                               
                                                width = 12),width = 4
@@ -310,19 +317,27 @@ shinyUI(fluidPage(theme = "style.css",
                                                solidHeader = TRUE,
                                                collapsible = FALSE,
                                                withMathJax(),
-                                               "random forest regression method",
-                                               "random forest regression method uses resampling method, like bootstrapping methods to 
+                                               "Random Forest Regression Method",
+                                               br(),
+                                               "random forest regression method is one of the aggregated decision trees methods that uses resampling method, like bootstrapping methods to 
                                                generate the data sets based on the original dataset(allow the repeatness of the observations)
                                                And then we fit the model using predictors by random forest regression. Random forest regression
                                                is a de-correlate methods, because under the setting of tree method, if we use same predicotrs all the time,
                                                the trees will be highly correlated. Under the setting of random forest method, we randomly select m predictors 
                                                to fit the model, here the m will be chose by k-fold cross validation so that the averaged mean square error will be 
                                                minimized",
-                                               helpText("Algorithms that can explain the random forest regression:
-                                               Step 1: Random sample with replacement, $$b = 1,...,B$$
-                                               step 2: train regression tree $$f_b$$ on the sample data
-                                               step 3: use the k-fold cross validation to determine the value of m to use, notice that m is usually $$\\sqrt(p)$$ or $$\\frac{p}{3}$$ p is the total predictors"),
-                                               helpText("step 4: the predictions for sampled $$x's$$ will be averaged to reduce the test error, $$estimated f = \\frac{1}{B}\\cdot\\sum_{b=1}^B f_b$$"),
+                                               br(),
+                                               "Algorithms that can explain the random forest regression:",
+                                               br(),
+                                               "Step 1: Random sample with replacement, $$b = 1,...,B$$",
+                                               "Step 2: train regression tree $$f_b$$ on the sample data",
+                                               br(),
+                                               "Step 3: use the k-fold cross validation to determine the value of m to use, notice that m is usually $$\\sqrt(p)$$ or $$\\frac{p}{3}$$ p is the total predictors",
+                                               br(),
+                                               "Step 4: the predictions for sampled $$x's$$ will be averaged to reduce the test error, $$estimated \\hat{f} = \\frac{1}{B}\\cdot\\sum_{b=1}^B f_b$$",
+                                                        "Using random forest could definitely reduce the variance and overfitting problem and therefore improve the accuracy of the model,
+                                                        trees method is better to visualize but it runs slowly when the predictors are large. Meanwhile, the categorical variables are not suitable under the 
+                                                        random regression setting",
                                                width = 12),width = 4
                                                ),
                                               column(
@@ -331,7 +346,32 @@ shinyUI(fluidPage(theme = "style.css",
                                                status = "success",
                                                solidHeader = TRUE,
                                                collapsible = FALSE,
-                                               "dfhiousdhauigfhiua",width = 12),width = 4
+                                               withMathJax(),
+                                               "Shrinkage Method: Ridge Regression",
+                                               br(),
+                                               "Shrinkage method like Ridge regression could reduce the variance by shrinking the parameters estimates using the tuning paramter added in the model,
+                                               Ridge regression shrinks the coefficient estimates towards 0",
+                                               br(),
+                                               "The usual linear regression method uses least square to estimate the coefficients, it usually has low bias but high variance",
+                                               br(),
+                                               "The algorithms of ridge regression:",
+                                               br(),
+                                                        "Step 1: For the least square method, the residual sum of square is represented as 
+                                                        $$RSS = \\sum_{i=1}^n (y_i-(\\beta_0 + \\sum_{j=1}^p \\beta_{j}\\cdot X_{ij}))^2$$",
+                                               br(),
+                                                        
+                                                        "Step 2: Ridge regression adds shrinkage penalty $$\\lambda \\sum_{j=1}^p \\beta^2_{j}$$ here $$\\lambda > 0$$, is a tuning parameter",
+                                               br(),
+                                                        "Step 3: Ridge regression coefficient estimates $$\\hat{\\beta}^{R}$$ are the values that minimize
+                                                        $$\\sum_{i=1}^n (y_i-(\\beta_0 + \\sum_{j=1}^p \\beta_{j}\\cdot X_{ij}))^2 + \\lambda \\sum_{j=1}^p \\beta^2_{j}$$",
+                                               br(),
+                                                    
+                                                        "Step 4: Lambda here controls the relative impact of RSS and shrinkage penalty stated above. Ridge will produce a difference set of coefficient
+                                                        estimate $$\\hat{\\beta}^{R}_{\\lambda}$$ for each value of $$\\lambda$$. The lambda here is basically determined by cross validation",
+                                               br(),
+                                               "Ridge regression definitely improve the accuracy of the model fitting if there are variables that have less impact on the model, it works better
+                                               when the least squares method have high variance, it also has a computational advantage over other variable selection method to reduce the dimension of the data
+                                               But unfortunately, it will only set the coeffcient estimates to be close to 0, it did not perform variable selection",width = 12),width = 4
                                               )
                                              
                                              )
