@@ -455,15 +455,69 @@ shinyUI(fluidPage(theme = "style.css",
                                                                max = 0.9,
                                                                step = 0.1,
                                                                value = 0.7),
-                                                   width = 10),width = 5),
+                                                   radioButtons("CV",
+                                                                "Select K for the k-fold cross validation",
+                                                                choices = c(3,5,10),
+                                                                selected = 3
+                                                   ),
+                                                   h4("note that random forest run slowly if the cv is large"),
+                                                   h4("For this data set, we want to using fit the model with response variable: rating, rating ranges from 0 to 100, 100 denotes the perfect rating.
+                                                   we will have all appropriate explantory variables:
+                                                      favorite count, user count, year, month, popularity rank, age rating, total episodes number, total length of anime in minutes"),
+                                                   h4("before fitting the model, I set the categorical variable age_rating(3 categories) to be three numerical dummy variables, with each column have value (0,1) indicating whether 
+                                                      the observation falls in this category. Also fixed some negative values in total length column. Lastly, omit some rows that have missing values of total episodes."),
+                                                   "note that in the multiple linear regression, we droped the one of the dummy variable where age_rating = G because this category has collinearity with category PG",
+                                                   h4("Next Step: I set the base model to have variables: 
+                                                      favorite count, user count, month, total episodes number, age_rating(3 dummies),
+                                                      you can choose if you want to add other variables:"),
+                                                   pickerInput("variable",
+                                                               "choose the variable you prefer:",
+                                                               choices = c("popularity_rank","year","total_length","all included"),
+                                                               selected = "popularity_rank"),
+                                                   
+                                                   radioButtons("model",
+                                                                "Select Model you want to fit:",
+                                                                choices = c("multiple linear regression","regression tree","random forest regression","ridge regression","All models"),
+                                                                selected = "multiple linear regression"
+                                                                ),
+                                                   
+                                                   actionButton("press",
+                                                                "Action",
+                                                                color = "danger",
+                                                                no_outline = TRUE),
+                                                   
+                                                   width = 12),width = 5),
                                                column(
                                                  box(
                                                    title = "Results", 
                                                    status = "danger",
                                                    solidHeader = TRUE,
                                                    collapsible = FALSE,
-                                                   "Multiple Regression Method",
-                                                   width = 12),width = 7),
+                                                   "Results from model fitting:",
+                                                   
+                                                   
+                                                   h3("Info and Results for the multiple linear regression:"),
+                                                   verbatimTextOutput("Multiple"),
+                                                   h3("Info and Results for the Regression Tree:"),
+                                                   h4("Here this CART model replicates the same process used by the rpart function where the model complexity is determined using the one-standard error method.
+                                                      We do not need to specify the tuning parameter complecity parameter in this case"),
+                                                   verbatimTextOutput("Tree"),
+                                                   h3("Info and Results for the Random Forest Regression:"),
+                                                   h4("it may take a minute to run random forest"),
+                                                   verbatimTextOutput("Random"),
+                                                   h4("Here the plot shows the importance of variable using the random forest method, if greater the Node Purity, the more important of the popularity"),
+                                                   plotOutput("Random2"),
+                                                   h3("Info and Results for the Ridge Regression:"),
+                                                   verbatimTextOutput("Ridge"),
+                                                   h3("All model compared using the test set"),
+                                                   h4("Note:only show when you select all models"),
+                                                   dataTableOutput("AllStats"),
+                                                   
+                                                  
+                                                   
+                                                   width = 12),width = 7)
+                                             )
+                                           )
                                      
                                                    
                                                    
@@ -487,7 +541,7 @@ shinyUI(fluidPage(theme = "style.css",
                                                    
                                                    
                                                    
-                                                   ),
+                                                   )),
                                      tabPanel(
                                          "Prediction"
                                      )
@@ -508,5 +562,33 @@ shinyUI(fluidPage(theme = "style.css",
     # Application title
    
 ))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

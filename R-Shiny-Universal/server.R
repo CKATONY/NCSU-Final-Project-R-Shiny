@@ -8,12 +8,16 @@
 #
 
 library(shiny)
+library(caret)
+library(elasticnet)
 library(tidyverse)
-library(factoextra) 
+library(factoextra)
+library(randomForest)
+
 data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim = " ")
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output,session) {
+shinyServer(function(input, output,session){
 # data page 
     output$Datatable1 <- renderDataTable({
         if(input$month == FALSE & input$age == FALSE){
@@ -186,8 +190,350 @@ shinyServer(function(input, output,session) {
     
     
     
+    output$Multiple <- renderPrint({
+      
+        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
+        # convert the age rating into numeric columns. 
+        dummies <- dummyVars(rating ~ age_rating,data = get)
+        pre<-predict(dummies, newdata = get)
+        Z <- cbind(get,pre)
+        final2 <- Z %>% select(-age_rating)
+        last <- abs(final2)
+        # data cleaning to get final data set:
+        set.seed(123)
+        final <- na.omit(last)
+        rows <- sample(nrow(final))
+        final <- final[rows, ]
+        
+        
+        train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(input$split), list = F)
+        train.sub <- final[train.index.sub, ] # training set
+        test.sub <- final[-train.index.sub, ] # test set
+      
+        
+                     if(input$variable != "all included"){
+                       if(input$model == "All models" | input$model =="multiple linear regression"){
+                         predictors1 <- paste(input$variable,"favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR",sep = "+")
+                         model1 <- as.formula(paste0("rating", "~", predictors1))
+                         
+                         
+                         multiple <- train(model1, data = train.sub, 
+                                           method = "lm", preProcess =c("center", "scale"), 
+                                           trControl = trainControl(method = "cv", number = as.numeric(input$CV)))
+                         summary(multiple)
+                       }
+                       else{print("Null")}
+                     }
+                     else if(input$variable == "all included"){
+                       if(input$model == "All models"|input$model =="multiple linear regression"){
+                         predictors1 <- paste("favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","popularity_rank","year","total_length",sep = "+")
+                         model1 <- as.formula(paste0("rating", "~", predictors1))
+                         multiple <- train(model1, data = train.sub, 
+                                           method = "lm", preProcess =c("center", "scale"), 
+                                           trControl = trainControl(method = "cv", number = as.numeric(input$CV)))
+                         summary(multiple)
+                         
+                       }}
+                      
+    })
+        
+
+        output$Tree <- renderPrint({
+          get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
+          # convert the age rating into numeric columns. 
+          dummies <- dummyVars(rating ~ age_rating,data = get)
+          pre<-predict(dummies, newdata = get)
+          Z <- cbind(get,pre)
+          final2 <- Z %>% select(-age_rating)
+          last <- abs(final2)
+          # data cleaning to get final data set:
+          set.seed(123)
+          final <- na.omit(last)
+          rows <- sample(nrow(final))
+          final <- final[rows, ]
+          train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(input$split), list = F)
+          train.sub <- final[train.index.sub, ] # training set
+          test.sub <- final[-train.index.sub, ] # test set
+          
+          
+          
+        
+          if(input$variable != "all included"){
+            if(input$model == "All models" | input$model =="regression tree"){
+            predictors2 <- paste(input$variable,"favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG",sep = "+")
+            model2 <- as.formula(paste0("rating", "~", predictors2))
+            Tree <- train(model2, data = train.sub, 
+                          method = 'rpart1SE',
+                          preProcess = c("center","scale"),
+                          trControl = trainControl(method = "cv",number = as.numeric(input$CV)))
+            summary(Tree)
+            }
+            else{print("Null")}
+          }
+         if(input$variable == "all included"){
+              if(input$model == "All models" | input$model =="regression tree"){
+                predictors2 <- paste("favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG","popularity_rank","year","total_length",sep = "+")
+                model2 <- as.formula(paste0("rating", "~", predictors2))
+                Tree <- train(model2, data = train.sub, 
+                              method = 'rpart1SE',
+                              preProcess = c("center","scale"),
+                              trControl = trainControl(method = "cv",number = as.numeric(input$CV)))
+                summary(Tree)}
+              else{print("Null")}
+        }
+        
+  
+      })
+        
+        
+      output$Random <- renderPrint({
+          get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
+          # convert the age rating into numeric columns. 
+          dummies <- dummyVars(rating ~ age_rating,data = get)
+          pre<-predict(dummies, newdata = get)
+          Z <- cbind(get,pre)
+          final2 <- Z %>% select(-age_rating)
+          last <- abs(final2)
+          # data cleaning to get final data set:
+          set.seed(123)
+          final <- na.omit(last)
+          rows <- sample(nrow(final))
+          final <- final[rows, ]
+          train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(input$split), list = F)
+          train.sub <- final[train.index.sub, ] # training set
+          test.sub <- final[-train.index.sub, ] # test set
+        
+          if(input$variable != "all included"){
+            if(input$model == "All models" | input$model =="random forest regression"){
+              predictors2 <- paste(input$variable,"favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG",sep = "+")
+              model2 <- as.formula(paste0("rating", "~", predictors2))
+             
+                  RF <-  train(model2, data = train.sub, 
+                                      method = "rf",
+                                      preProcess = c("center","scale"),
+                                      trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+                  random <- randomForest(model2, data =train.sub, mtry = RF$bestTune$mtry )
+                  print(RF)
+              #RF$results 
+              #RF$finalModel
+              #importance(random)
+              #varImpPlot(random)
+            }
+            else{print("Null")}
+          }
+          if(input$variable == "all included"){
+            if(input$model == "All models" | input$model =="random forest regression"){
+              predictors2 <- paste("favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG","popularity_rank","year","total_length",sep = "+")
+              model2 <- as.formula(paste0("rating", "~", predictors2))
+              RF <-  train(model2, data = train.sub, 
+                           method = "rf",
+                           preProcess = c("center","scale"),
+                           trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+              random <- randomForest(model2, data =train.sub, mtry = RF$bestTune$mtry )
+              print(RF)
+              }
+            else{print("Null")}
+          }
+          
+          
+      })
+        
+        
+      output$Random2 <- renderPlot({
+        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
+        # convert the age rating into numeric columns. 
+        dummies <- dummyVars(rating ~ age_rating,data = get)
+        pre<-predict(dummies, newdata = get)
+        Z <- cbind(get,pre)
+        final2 <- Z %>% select(-age_rating)
+        last <- abs(final2)
+        # data cleaning to get final data set:
+        set.seed(123)
+        final <- na.omit(last)
+        rows <- sample(nrow(final))
+        final <- final[rows, ]
+        train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(input$split), list = F)
+        train.sub <- final[train.index.sub, ] # training set
+        test.sub <- final[-train.index.sub, ] # test set
+      
+        if(input$variable != "all included"){
+          if(input$model == "All models" | input$model =="random forest regression"){
+            predictors2 <- paste(input$variable,"favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG",sep = "+")
+            model2 <- as.formula(paste0("rating", "~", predictors2))
+            
+            RF <-  train(model2, data = train.sub, 
+                         method = "rf",
+                         preProcess = c("center","scale"),
+                         trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            random <- randomForest(model2, data =train.sub, mtry = RF$bestTune$mtry )
+            varImpPlot(random)
+          }
+          else{print("Null")}
+        }
+        if(input$variable == "all included"){
+          if(input$model == "All models" | input$model =="random forest regression"){
+            predictors2 <- paste("favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG","popularity_rank","year","total_length",sep = "+")
+            model2 <- as.formula(paste0("rating", "~", predictors2))
+            RF <-  train(model2, data = train.sub, 
+                         method = "rf",
+                         preProcess = c("center","scale"),
+                         trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            random <- randomForest(model2, data =train.sub, mtry = RF$bestTune$mtry )
+            varImpPlot(random)
+          }
+          else{print("Null")}
+        }
+      
+       
+        
+      })
+      
     
     
+      output$Ridge <- renderPrint({
+        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
+        # convert the age rating into numeric columns. 
+        dummies <- dummyVars(rating ~ age_rating,data = get)
+        pre<-predict(dummies, newdata = get)
+        Z <- cbind(get,pre)
+        final2 <- Z %>% select(-age_rating)
+        last <- abs(final2)
+        # data cleaning to get final data set:
+        set.seed(123)
+        final <- na.omit(last)
+        rows <- sample(nrow(final))
+        final <- final[rows, ]
+        train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(input$split), list = F)
+        train.sub <- final[train.index.sub, ] # training set
+        test.sub <- final[-train.index.sub, ] # test set
+      
+        if(input$variable != "all included"){
+          if(input$model == "All models" | input$model =="ridge regression"){
+            predictors2 <- paste(input$variable,"favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG",sep = "+")
+            model2 <- as.formula(paste0("rating", "~", predictors2))
+            ridge <-  train(model2, data = train.sub, 
+                         method = "ridge",
+                         preProcess = c("center","scale"),
+                         trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            print(ridge)
+          }
+          else{print("Null")}
+        }
+        if(input$variable == "all included"){
+          if(input$model == "All models" | input$model =="ridge regression"){
+            predictors2 <- paste("favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG","popularity_rank","year","total_length",sep = "+")
+            model2 <- as.formula(paste0("rating", "~", predictors2))
+            ridge <-  train(model2, data = train.sub, 
+                            method = "ridge",
+                            preProcess = c("center","scale"),
+                            trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            print(ridge)
+          }
+          else{print("Null")}
+        }
+      
+       
+        
+      })
+      
+    
+      
+      output$AllStats <- renderDataTable({
+        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
+        # convert the age rating into numeric columns. 
+        dummies <- dummyVars(rating ~ age_rating,data = get)
+        pre<-predict(dummies, newdata = get)
+        Z <- cbind(get,pre)
+        final2 <- Z %>% select(-age_rating)
+        last <- abs(final2)
+        # data cleaning to get final data set:
+        set.seed(123)
+        final <- na.omit(last)
+        rows <- sample(nrow(final))
+        final <- final[rows, ]
+        train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(input$split), list = F)
+        train.sub <- final[train.index.sub, ] # training set
+        test.sub <- final[-train.index.sub, ] # test set
+      
+        if(input$variable != "all included"){
+          if(input$model == "All models"){
+            predictors2 <- paste(input$variable,"favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG",sep = "+")
+            model2 <- as.formula(paste0("rating", "~", predictors2))
+            
+            multiple <- train(model2, data = train.sub, 
+                              method = "lm", preProcess =c("center", "scale"), 
+                              trControl = trainControl(method = "cv", number = as.numeric(input$CV)))
+            
+            Tree <- train(model2, data = train.sub, 
+                          method = 'rpart1SE',
+                          preProcess = c("center","scale"),
+                          trControl = trainControl(method = "cv",number = as.numeric(input$CV)))
+            RF <-  train(model2, data = train.sub, 
+                         method = "rf",
+                         preProcess = c("center","scale"),
+                         trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            ridge <-  train(model2, data = train.sub, 
+                            method = "ridge",
+                            preProcess = c("center","scale"),
+                            trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            pred.lm <- predict(multiple  , newdata = test.sub)
+            test.RMSE.lm <- RMSE(pred.lm, test.sub$rating)
+            pred.tree <- predict(Tree  , newdata = test.sub)
+            test.RMSE.tree <- RMSE(pred.tree, test.sub$rating)
+            pred.random <- predict(RF  , newdata = test.sub)
+            test.RMSE.RF <- RMSE(pred.random, test.sub$rating)
+            pred.ridge <- predict(ridge  , newdata = test.sub)
+            test.RMSE.ridge <- RMSE(pred.ridge, test.sub$rating)
+            
+            data.frame(models=c("Multiple Linear Regression","Regression Tree","Random Forest Regression","Ridge Regression"),
+                       test_RMSE = c(test.RMSE.lm,test.RMSE.tree,test.RMSE.RF,test.RMSE.ridge))
+            
+          }
+        
+        }
+       if(input$variable == "all included"){
+          if(input$model == "All models"){
+            predictors2 <- paste("favorite_count","month","user_count","total_episode","age_ratingPG","age_ratingR","age_ratingG","popularity_rank","year","total_length",sep = "+")
+            model2 <- as.formula(paste0("rating", "~", predictors2))
+            
+            multiple <- train(model2, data = train.sub, 
+                              method = "lm", preProcess =c("center", "scale"), 
+                              trControl = trainControl(method = "cv", number = as.numeric(input$CV)))
+            
+            Tree <- train(model2, data = train.sub, 
+                          method = 'rpart1SE',
+                          preProcess = c("center","scale"),
+                          trControl = trainControl(method = "cv",number = as.numeric(input$CV)))
+            RF <-  train(model2, data = train.sub, 
+                         method = "rf",
+                         preProcess = c("center","scale"),
+                         trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            ridge <-  train(model2, data = train.sub, 
+                            method = "ridge",
+                            preProcess = c("center","scale"),
+                            trControl = trainControl(method = "cv",number =as.numeric(input$CV)))
+            pred.lm <- predict(multiple  , newdata = test.sub)
+            test.RMSE.lm <- RMSE(pred.lm, test.sub$rating)
+            pred.tree <- predict(Tree  , newdata = test.sub)
+            test.RMSE.tree <- RMSE(pred.tree, test.sub$rating)
+            pred.random <- predict(RF  , newdata = test.sub)
+            test.RMSE.RF <- RMSE(pred.random, test.sub$rating)
+            pred.ridge <- predict(ridge  , newdata = test.sub)
+            test.RMSE.ridge <- RMSE(pred.ridge, test.sub$rating)
+            
+            data.frame(models=c("Multiple Linear Regression","Regression Tree","Random Forest Regression","Ridge Regression"),
+                       test_RMSE = c(test.RMSE.lm,test.RMSE.tree,test.RMSE.RF,test.RMSE.ridge))
+            
+          }
+          
+        }
+
+      
+        
+        
+        
+        
+      })
     
     
 })
