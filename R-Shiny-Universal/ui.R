@@ -12,6 +12,7 @@ library(tidyverse)
 library(shinyWidgets)
 library(factoextra)
 library(shinydashboard)
+library(caret)
 
 
 data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim =" ")
@@ -295,24 +296,64 @@ shinyUI(fluidPage(theme = "style.css",
                                                br(),
                                                "we fit the response using the subset of predictors",
                                                br(),
+                                               br(),
                                                withMathJax(),
                                                "The modeling equation for the multiple linear regression is
                                                         $$Y = \\beta_0+\\beta_1*X_1+\\beta_2*X_2+\\beta_3*X_3+\\beta_4*X_4+\\beta_5*X_5...$$",
                                                "notice that here the multiple linear regression model have simple interpretation of 
                                                relationship between X's and Y, the order of X's is 1",
                                                br(),
+                                               br(),
                                                "however, this method have some drawbacks:",
+                                               br(),
                                                br(),
                                                "We are not including the synergy effect(interaction effect) and higher order terms of X's 
                                                in the model, we lose the interpretation of additive effects, and linear regression have linearity
                                                assumptions which will require us to transfrom Y or X if applicable",
                                                
                                               
-                                               width = 12),width = 4
+                                               width = 12),width = 3
+                                               ),
+                                               column(
+                                                 box(
+                                                   title = "Model 2", 
+                                                   status = "info",
+                                                   solidHeader = TRUE,
+                                                   collapsible = FALSE,
+                                                   "Regession Tree Method",
+                                                   br(),
+                                                   "The idea of regression tree method is to stratify the predictors(explanatory variables space into a simple region
+                                                   using mean or mode of training observations to make prediction for a given observation. The rules for splitting the
+                                                   predictors can be summarized in a treem so it is called the tree methods.",
+                                                   br(),
+                                                   withMathJax(),
+                                                   "Here is a simple algorithm to explain the regression tree method:",
+                                                   br(),
+                                                   br(),
+                                                   "Step 1: We divide $$X_1,...,X_{p}$$ in to J distinct, non-overlapping region, $$R_1,...,R_{j}$$",
+                                                   "Step 2: We use the mean of the response values for training observations in Rj as the prediction to stratify the observations that fall into redion Rj",
+                                                   br(),
+                                                   br(),
+                                                   "Step 3: We want to divide the predictor space into high dimension boxes. And the goal is to find boxes $$R_1,...,R_{j}$$ 
+                                                   that minimize the residual sum of square, which is given by $$\\sum_{j=1}^J \\sum_{i\\in {R_{j}}} (y_i- \\hat{y}_{R_{j}})^2$$
+                                                   Where $$\\hat{y}_{R_{j}}$$ is mean response for the training observations within the $$j_{th}$$ box",
+                                                   br(),
+                                                   br(),
+                                                   "There are ways to improve the tree method, like recursive binary splitting, Tree pruning, and etc...",
+                                                   
+                                                   br(),
+                                                   br(),
+                                                   "The decsion tree method is simple and useful for interpretation but it is not competitive for other supervised learning methods
+                                                   (like lasso, ridge or dimension reduction method) in terms of prediction accuracy",
+                                                   
+                                                
+                                                   
+                                                   
+                                                   width = 12),width = 3
                                                ),
                                                column(
                                              box(
-                                               title = "Model 2", 
+                                               title = "Model 3", 
                                                status = "primary",
                                                solidHeader = TRUE,
                                                collapsible = FALSE,
@@ -321,28 +362,32 @@ shinyUI(fluidPage(theme = "style.css",
                                                br(),
                                                "random forest regression method is one of the aggregated decision trees methods that uses resampling method, like bootstrapping methods to 
                                                generate the data sets based on the original dataset(allow the repeatness of the observations)
-                                               And then we fit the model using predictors by random forest regression. Random forest regression
+                                               And then we fit the regression tree using predictors under random forest setting. Random forest regression
                                                is a de-correlate methods, because under the setting of tree method, if we use same predicotrs all the time,
                                                the trees will be highly correlated. Under the setting of random forest method, we randomly select m predictors 
                                                to fit the model, here the m will be chose by k-fold cross validation so that the averaged mean square error will be 
                                                minimized",
                                                br(),
+                                               br(),
                                                "Algorithms that can explain the random forest regression:",
                                                br(),
+                                               br(),
                                                "Step 1: Random sample with replacement, $$b = 1,...,B$$",
-                                               "Step 2: train regression tree $$f_b$$ on the sample data",
+                                               "Step 2: train regression tree $$f_b$$ on the sample data, details can be seen from the model 2",
+                                               br(),
                                                br(),
                                                "Step 3: use the k-fold cross validation to determine the value of m to use, notice that m is usually $$\\sqrt(p)$$ or $$\\frac{p}{3}$$ p is the total predictors",
                                                br(),
-                                               "Step 4: the predictions for sampled $$x's$$ will be averaged to reduce the test error, $$estimated \\hat{f} = \\frac{1}{B}\\cdot\\sum_{b=1}^B f_b$$",
+                                               br(),
+                                               "Step 4: the predictions for sampled $$x's$$ will be averaged to reduce the test error, $$\\hat{f} = \\frac{1}{B}\\cdot\\sum_{b=1}^B f_b$$",
                                                         "Using random forest could definitely reduce the variance and overfitting problem and therefore improve the accuracy of the model,
                                                         trees method is better to visualize but it runs slowly when the predictors are large. Meanwhile, the categorical variables are not suitable under the 
                                                         random regression setting",
-                                               width = 12),width = 4
+                                               width = 12),width = 3
                                                ),
                                               column(
                                                 box(
-                                               title = "Model 3", 
+                                               title = "Model 4", 
                                                status = "success",
                                                solidHeader = TRUE,
                                                collapsible = FALSE,
@@ -356,22 +401,26 @@ shinyUI(fluidPage(theme = "style.css",
                                                br(),
                                                "The algorithms of ridge regression:",
                                                br(),
+                                               br(),
                                                         "Step 1: For the least square method, the residual sum of square is represented as 
                                                         $$RSS = \\sum_{i=1}^n (y_i-(\\beta_0 + \\sum_{j=1}^p \\beta_{j}\\cdot X_{ij}))^2$$",
                                                br(),
                                                         
                                                         "Step 2: Ridge regression adds shrinkage penalty $$\\lambda \\sum_{j=1}^p \\beta^2_{j}$$ here $$\\lambda > 0$$, is a tuning parameter",
                                                br(),
+                                               br(),
                                                         "Step 3: Ridge regression coefficient estimates $$\\hat{\\beta}^{R}$$ are the values that minimize
                                                         $$\\sum_{i=1}^n (y_i-(\\beta_0 + \\sum_{j=1}^p \\beta_{j}\\cdot X_{ij}))^2 + \\lambda \\sum_{j=1}^p \\beta^2_{j}$$",
                                                br(),
-                                                    
+                                               
                                                         "Step 4: Lambda here controls the relative impact of RSS and shrinkage penalty stated above. Ridge will produce a difference set of coefficient
                                                         estimate $$\\hat{\\beta}^{R}_{\\lambda}$$ for each value of $$\\lambda$$. The lambda here is basically determined by cross validation",
                                                br(),
+                                               br(),
                                                "Ridge regression definitely improve the accuracy of the model fitting if there are variables that have less impact on the model, it works better
                                                when the least squares method have high variance, it also has a computational advantage over other variable selection method to reduce the dimension of the data
-                                               But unfortunately, it will only set the coeffcient estimates to be close to 0, it did not perform variable selection",width = 12),width = 4
+                                               But unfortunately, it will only set the coeffcient estimates to be close to 0, it did not perform variable selection",
+                                               width = 12),width = 3
                                               )
                                              
                                              )
@@ -379,8 +428,66 @@ shinyUI(fluidPage(theme = "style.css",
                                         
                                      ))),
                                      tabPanel(
-                                         "Model Fitting"
-                                     ),
+                                         "Model Fitting",
+                                         dashboardPage(
+                                           dashboardHeader(title = "Modeling Fitting"),
+                                           dashboardSidebar(
+                                             "This is the Model Fitting page:",
+                                             "The left side box allow you to:",
+                                             br(),
+                                             "choose the proportion of data used",
+                                             "select variable used for each model",
+                                             br(),
+                                             "And the right side box will show the corresponding results based on your choice"
+                                           ),
+                                           dashboardBody(
+                                             fluidRow(
+                                               column(
+                                                 box(
+                                                   title = "Functionality", 
+                                                   status = "primary",
+                                                   solidHeader = TRUE,
+                                                   collapsible = FALSE,
+                                                   h3("Splitting the training and test data set:"),
+                                                   sliderInput("split",
+                                                               "Proportions of training data",
+                                                               min = 0.5,
+                                                               max = 0.9,
+                                                               step = 0.1,
+                                                               value = 0.7),
+                                                   width = 10),width = 5),
+                                               column(
+                                                 box(
+                                                   title = "Results", 
+                                                   status = "danger",
+                                                   solidHeader = TRUE,
+                                                   collapsible = FALSE,
+                                                   "Multiple Regression Method",
+                                                   width = 12),width = 7),
+                                     
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   
+                                                   ),
                                      tabPanel(
                                          "Prediction"
                                      )
