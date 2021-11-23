@@ -166,36 +166,3 @@ G %>% group_by(year) %>% summarize(mean_rating = mean(rating),mean_user = mean(u
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

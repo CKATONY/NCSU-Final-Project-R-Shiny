@@ -448,6 +448,7 @@ shinyUI(fluidPage(theme = "style.css",
                                                    status = "primary",
                                                    solidHeader = TRUE,
                                                    collapsible = FALSE,
+                                                   p("note that you will not see the result unless you hit the submit botton", style = "color:red"),
                                                    h3("Splitting the training and test data set:"),
                                                    sliderInput("split",
                                                                "Proportions of training data",
@@ -460,13 +461,13 @@ shinyUI(fluidPage(theme = "style.css",
                                                                 choices = c(3,5,10),
                                                                 selected = 3
                                                    ),
-                                                   h4("note that random forest run slowly if the cv is large"),
+                                                   p("Note that random forest run slowly if the cv is large",style = "color:red"),
                                                    h4("For this data set, we want to using fit the model with response variable: rating, rating ranges from 0 to 100, 100 denotes the perfect rating.
                                                    we will have all appropriate explantory variables:
                                                       favorite count, user count, year, month, popularity rank, age rating, total episodes number, total length of anime in minutes"),
                                                    h4("before fitting the model, I set the categorical variable age_rating(3 categories) to be three numerical dummy variables, with each column have value (0,1) indicating whether 
                                                       the observation falls in this category. Also fixed some negative values in total length column. Lastly, omit some rows that have missing values of total episodes."),
-                                                   "note that in the multiple linear regression, we droped the one of the dummy variable where age_rating = G because this category has collinearity with category PG",
+                                                   p("note that in the multiple linear regression, we droped the one of the dummy variable where age_rating = G because this category has collinearity with category PG",style = "color:red"),
                                                    h4("Next Step: I set the base model to have variables: 
                                                       favorite count, user count, month, total episodes number, age_rating(3 dummies),
                                                       you can choose if you want to add other variables:"),
@@ -482,7 +483,7 @@ shinyUI(fluidPage(theme = "style.css",
                                                                 ),
                                                    
                                                    actionButton("press",
-                                                                "Action",
+                                                                "Submit",
                                                                 color = "danger",
                                                                 no_outline = TRUE),
                                                    
@@ -543,7 +544,95 @@ shinyUI(fluidPage(theme = "style.css",
                                                    
                                                    )),
                                      tabPanel(
-                                         "Prediction"
+                                         "Prediction",
+                                         dashboardPage(
+                                           dashboardHeader(title = "Predicting Rating"),
+                                           dashboardSidebar(
+                                             "This page is predicting page,
+                                             you can select model and specify the values of explanatory variables to predict the response variable rating"),
+                                           dashboardBody(
+                                             fluidRow(
+                                               column(
+                                                 box(
+                                                   title = "Select models and Specify the values", 
+                                                   status = "primary",
+                                                   solidHeader = TRUE,
+                                                   collapsible = FALSE,
+                                                   p("note that you will not see the result unless you hit the Predict botton", style = "color:red"),
+                                                   p("And the age guide = G is set to be 0 all the time becasue of the high correlation", style = "color:red"),
+                                                   h3("Model to use:"),
+                                                   h4("note that the random forest model is opt out since it runs slowly"),
+                                                   radioButtons("M",
+                                                                "Select Model you want to predict:",
+                                                                choices = c("multiple.linear.regression","regression.tree","ridge.regression"),
+                                                                selected = "multiple.linear.regression"
+                                                   ),
+                                                   numericInput("fcount",
+                                                                "favorite count(range from 0 to 1000)",
+                                                                min = 0,
+                                                                max= 10000,
+                                                                value = 0,
+                                                                step = 1),
+                                                   numericInput("ucount",
+                                                                "user count(range from 0 to 350000)",
+                                                                min = 0,
+                                                                value = 0,
+                                                                max= 350000,
+                                                                step = 1),
+                                                   numericInput("year4",
+                                                                "year(range from 2010 to 2022)",
+                                                                min = 2010,
+                                                                max= 2022,
+                                                                value = 2010,
+                                                                step = 1),
+                                                   numericInput("month4",
+                                                                "month(range from 1 to 12)",
+                                                                min = 1,
+                                                                max= 12,
+                                                                value = 1,
+                                                                step = 1),
+                                                   numericInput("pop",
+                                                                "popularity rank (range from 1 to 20000)",
+                                                                min = 1,
+                                                                max= 20000,
+                                                                value = 1,
+                                                                step = 1),
+                                                   numericInput("Nep",
+                                                                "number of episodes  (range from 1 to 260)",
+                                                                min = 1,
+                                                                max= 260,
+                                                                value = 1,
+                                                                step = 1),
+                                                   numericInput("Lep",
+                                                                "Length of Episodes in minute  (range from 1 to 6500)",
+                                                                min = 1,
+                                                                max= 6500,
+                                                                value = 1,
+                                                                step = 1),
+                                                   radioButtons("age_guide",
+                                                                "Select Age guide:",
+                                                                choices = c("age_ratingPG","age_ratingR"),
+                                                                selected = "age_raingPG"
+                                                   ),
+                                                   actionButton("pred",
+                                                                "Predict"),
+                                                   width = 12),width = 2
+                                                 ),
+                                               column(
+                                                 box(
+                                                   title = "Predicted Rating(range from 0 to 100)", 
+                                                   status = "primary",
+                                                   solidHeader = TRUE,
+                                                   collapsible = FALSE,
+                                                   h3("Predicted value"),
+                                                   dataTableOutput("values"),
+                                                   
+                                                   width = 12),width = 10
+                                               )
+                                               )
+                                             )
+                                           
+                                           )
                                      )
                                  )
                              )
