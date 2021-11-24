@@ -20,20 +20,27 @@ data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim = " ")
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session){
 # data page 
-    output$Datatable1 <- renderDataTable({
-        if(input$month == FALSE & input$age == FALSE){
+    output$Datatable1 <- DT::renderDataTable({
+       if(input$month == FALSE & input$age == FALSE){
             data %>% filter(year == input$year)
+          
         }
         else if(input$month == FALSE & input$age == TRUE){
             data %>% filter(year == input$year & age_rating == input$age_rating)
+          
         }
         else if(input$month == TRUE & input$age == FALSE){
             data %>% filter(year == input$year & month == input$year_month)
+          
         }
         else if(input$month == TRUE & input$age == TRUE){
             data %>% filter(year == input$year & month == input$year_month & age_rating == input$age_rating)
+          
         }
-    })
+    },
+       options = list(scrollX = TRUE)
+    )
+    
     output$downloadData <- downloadHandler(
         filename = function() {
             paste(input$year, ".csv", sep = "")
@@ -42,11 +49,21 @@ shinyServer(function(input, output,session){
             write.csv(Datatable1, file, row.names = FALSE)
         }
     )
-    output$Datatable2 <- renderDataTable({
+    
+    
+    
+    
+    output$Datatable2 <- DT::renderDataTable({
         B <-data[order(data$rating,decreasing = TRUE),]
         B %>% filter(Categories %in% input$genre|Genres %in% input$genre)%>% top_n(input$rank, rating)
         
-    })
+    },
+        options = list(scrollX = TRUE)
+    )
+    
+    
+    
+    
     output$downloadData <- downloadHandler(
         filename = function() {
             paste(input$year, ".csv", sep = "")

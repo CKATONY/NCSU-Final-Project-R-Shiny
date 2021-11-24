@@ -28,7 +28,7 @@ shinyUI(fluidPage(theme = "style.css",
                              tabPanel(
                                  "About",
                                  dashboardPage(
-                                   dashboardHeader(title = "About"),
+                                   dashboardHeader(title = "About this App"),
                                    dashboardSidebar(
                                      "Description of this app"),
                                    dashboardBody(
@@ -124,66 +124,88 @@ shinyUI(fluidPage(theme = "style.css",
                                      
                                      tabPanel(
                                          "Select Animes You Like",
-                                           sidebarPanel(
-                                             h3("Select the anime based on Year:"),
-                                             pickerInput(inputId = "year",
-                                                         label = "Years",
-                                                         choices = c(2010:2022),
-                                                         selected = 2010
-                                             ),
-                                             checkboxInput("month", 
-                                                           label = tags$span(style="color: red;","select by month within year"), 
-                                                           value = FALSE, 
-                                                           width = NULL),
-                                             conditionalPanel(condition = "input.month",
-                                                              pickerInput("year_month",
-                                                                          "Months", 
-                                                                          choices = c(1:12),
-                                                                          selected = 1)),
-                                             checkboxInput("age", 
-                                                           label = tags$span(style="color: red;","select by age rating guide"), 
-                                                           value = FALSE, 
-                                                           width = NULL),
-                                             conditionalPanel(condition = "input.age",
-                                                              radioButtons(inputId = "age_rating",
-                                                         label = "Age Rating",
-                                                         choices = c("G", "PG", "R"),
-                                                         selected = "G"
-                                             )),
-                                             downloadButton("downloadData", "Download")
+                                         dashboardPage(
+                                           dashboardHeader(title = "Subset the Data"),
+                                           dashboardSidebar(
+                                             "You can subset the data based on your interest"),
+                                           dashboardBody(
+                                             fluidRow(
+                                               column(
+                                                   h3("Select the anime based on Year:"),
+                                                   pickerInput(inputId = "year",
+                                                               label = "Years",
+                                                               choices = c(2010:2022),
+                                                               selected = 2010
+                                                   ),
+                                                   checkboxInput("month", 
+                                                                 label = tags$span(style="color: red;","select by month within year"), 
+                                                                 value = FALSE, 
+                                                                 width = NULL),
+                                                   conditionalPanel(condition = "input.month",
+                                                                    pickerInput("year_month",
+                                                                                "Months", 
+                                                                                choices = c(1:12),
+                                                                                selected = 1)),
+                                                   checkboxInput("age", 
+                                                                 label = tags$span(style="color: red;","select by age rating guide"), 
+                                                                 value = FALSE, 
+                                                                 width = NULL),
+                                                   conditionalPanel(condition = "input.age",
+                                                                    radioButtons(inputId = "age_rating",
+                                                                                 label = "Age Rating",
+                                                                                 choices = c("G", "PG", "R"),
+                                                                                 selected = "G"
+                                                                    )),
+                                                   downloadButton("downloadData", "Download")
+                                                 ,width = 2),
+                                               
+                                               column(
+                                                 DT::dataTableOutput("Datatable1")
+                                                 ,width = 10)
+                                             )
+                                           )
+                                         )
                                      ),
-                                     mainPanel(
-                                       dataTableOutput("Datatable1")
-                                     )),
+
                                      tabPanel(
                                          "Based on rank and genre",
-                                         sidebarPanel(
-                                           h3("Select the anime based on the rating rank"),
-                                           pickerInput(inputId = "rank",
-                                                       label = "Ranking",
-                                                       choices = c(1,10,20,30,40,50,60,70,80,90,100),
-                                                       selected = 1
-                                           ),
-                                            
-                                          
-                                         h3("Based on Genre"),
-                                           radioButtons(inputId = "genre",
-                                                        label = "Categories",
-                                                        choices = c("Fantasy", "Magic","Action", "Comedy", "School Life","Science Fiction","Romance","Horror",
-                                                                    "Adventure","Music","Drama","Slice of Life","Sports",'Historical',"Mystery"),
-                                                        selected = "Fantasy"
-                                         ),
-                                         downloadButton("downloadData2", "Download")
-                                         ),
-                                         mainPanel(
-                                             dataTableOutput("Datatable2")
-
+                                         dashboardPage(
+                                           dashboardHeader(title = "Subset the Data"),
+                                           dashboardSidebar(
+                                             "You can select the anime based on the rating rank"),
+                                           dashboardBody(
+                                             fluidRow(
+                                               column(
+                                                 
+                                                   h3("Select the anime based on the rating rank"),
+                                                   pickerInput(inputId = "rank",
+                                                               label = "Ranking",
+                                                               choices = c(1,10,20,30,40,50,60,70,80,90,100),
+                                                               selected = 1
+                                                   ),
+                                                   
+                                                   
+                                                   h3("Based on Genre"),
+                                                   radioButtons(inputId = "genre",
+                                                                label = "Categories",
+                                                                choices = c("Fantasy", "Magic","Action", "Comedy", "School Life","Science Fiction","Romance","Horror",
+                                                                            "Adventure","Music","Drama","Slice of Life","Sports",'Historical',"Mystery"),
+                                                                selected = "Fantasy"
+                                                   ),
+                                                   downloadButton("downloadData2", "Download")
+                                                 ,width = 2),
+                                               
+                                               column(
+                                                 
+                                                 DT::dataTableOutput("Datatable2"),
+                                                 width = 10)
+                                             )
+                                           )
                                          )
-                                       
-                                     )
-                                           
-                                     )
-                                 )
+                                        )
+                                )
+                              )
+
                              ,
                              tabPanel(
                                  "Data Exploration",
@@ -195,7 +217,8 @@ shinyUI(fluidPage(theme = "style.css",
                                   dashboardPage(
                                     dashboardHeader(title = "Table Summaries"),
                                     dashboardSidebar(
-                                      "This is the table summaries"
+                                      "This is the table summaries, it provides the mean of rating, user counts, favorite counts and episode number, Interquantile range of rating and users counts
+                                      based on year, age rating guide, or episode category you choose"
                                     ),
                                     dashboardBody(
                                      fluidRow(
@@ -268,76 +291,101 @@ shinyUI(fluidPage(theme = "style.css",
 
                                  tabPanel(
                                      "Visualizations",
-                                     sidebarPanel(
-                                       h3("Plot based on year"),
-                                       sliderInput("year3",
-                                                   "Years",
-                                                   min = 2010,
-                                                   max = 2022,
-                                                   step = 1,
-                                                   value = 2010), 
-                                       h4("by hitting the check box below, you could see the k-mean clustering of two variables: user count and rating,
-                                           and the original values are scaled"),
-                                       checkboxInput("kmeans", 
-                                                     label = tags$span(style="color: blue;","try k-means clustering based on user count and rating"), 
-                                                     value = FALSE, 
-                                                     width = NULL),
-                                      
-                                       conditionalPanel(condition = "input.kmeans",
-                                                        sliderInput("kmean",
-                                                                    "Select K",
-                                                                    min = 2,
-                                                                    max = 6,
-                                                                    step = 1,
-                                                                    value = 2)),
-                                       h4("by hitting the check box below, you could see the counts for the top number of popularity rank you selected,
-                                          the plot is exploring the how episode numbers could possibly affect the popularity rank within each cluster 
+                                     dashboardPage(
+                                       dashboardHeader(title = "Data Visualization"),
+                                       dashboardSidebar(
+                                         "This tab uses Scatter Plot and Bar Plot to provide graphical visualizations.",
+                                         br(),
+                                         "The scatter plot explore the relationship of user counts and rating of anime based on year. ",
+                                         br(),
+                                         "The k mean cluster explore further about those two variables.",
+                                         br(),
+                                         "You can hit the check box to see more explorations based on the clusters",
+                                         br(),
+                                         "The bar plot explore the counts of animes for each month across year(bar stacked by age rating guide)"
+                                       ),
+                                       dashboardBody(
+                                         fluidRow(
+                                           box(
+                                             title = "Scatter Plot and K means Clustering Functionality", 
+                                             status = "success", 
+                                             solidHeader = TRUE,
+                                             collapsible = FALSE,
+                                             h3("Plot based on year"),
+                                             sliderInput("year3",
+                                                         "Years",
+                                                         min = 2010,
+                                                         max = 2022,
+                                                         step = 1,
+                                                         value = 2010), 
+                                             h4("By hitting the check box below, you could see the k-mean clustering of two variables: user count and rating.
+                                           The original values are scaled"),
+                                             checkboxInput("kmeans", 
+                                                           label = tags$span(style="color: blue;","try k-means clustering based on user count and rating"), 
+                                                           value = FALSE, 
+                                                           width = NULL),
+                                             
+                                             conditionalPanel(condition = "input.kmeans",
+                                                              sliderInput("kmean",
+                                                                          "Select K",
+                                                                          min = 2,
+                                                                          max = 6,
+                                                                          step = 1,
+                                                                          value = 2)),
+                                             h4("By hitting the check box below, you could see the counts for the top number of popularity rank you selected,
+                                          the plot is exploring how episode numbers(3 categories) could possibly affect the popularity rank within each cluster 
                                           generated by the k mean clustering for each year"),
-                                       tags$span(style="color: red;","note that missing episode number is denoted as value 0 for better interpretation"),
-                                       checkboxInput("kmeans_explore", 
-                                                     label = tags$span(style="color: blue;","explore more based on clustering?"), 
-                                                     value = FALSE, 
-                                                     width = NULL),
-                                       conditionalPanel(condition = "input.kmeans_explore",
-                                                        pickerInput("popularity",
-                                                                    "Top Popularity rank based on the cluster",
-                                                                    choices = c(101,201,501,999,4999,9999),
-                                                                    selected = 101)),
-                                       
-                                       
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       h4("Plot based on month for each year"),
-                                       sliderInput("month2",
+                                             tags$span(style="color: red;","note that missing episode number is denoted as value 0 for better interpretation"),
+                                             checkboxInput("kmeans_explore", 
+                                                           label = tags$span(style="color: blue;","explore more based on clustering?"), 
+                                                           value = FALSE, 
+                                                           width = NULL),
+                                             conditionalPanel(condition = "input.kmeans_explore",
+                                                              pickerInput("popularity",
+                                                                          "Top Popularity rank based on the cluster",
+                                                                          choices = c(101,201,501,999,4999,9999),
+                                                                          selected = 101))
+                                           ),
+                                           box(
+                                             title = "Plots", 
+                                             status = "success", 
+                                             solidHeader = TRUE,
+                                             collapsible = FALSE,
+                                             textOutput("text"),
+                                             plotOutput("plotyear")
+                                             
+                                           )
+                                         ),
+                                         
+                                         fluidRow(
+                                           box(
+                                             title = "Bar Plot Functionality", 
+                                             status = "info", 
+                                             solidHeader = TRUE,
+                                             collapsible = FALSE,
+                                             h4("Plot based on month for each year"),
+                                             
+                                             sliderInput("month2",
                                                    "Months",
                                                    min = 1,
                                                    max = 12,
                                                    step =1,
                                                    value = 1)
-                                         
-                                       ),
-                                     mainPanel(
-                                       textOutput("text"),
-                                       plotOutput("plotyear"),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       br(),
-                                       plotOutput("plotmonth")
-                                       
+                                             ),
+                                           box(
+                                             title = "Plot", 
+                                             status = "info", 
+                                             solidHeader = TRUE,
+                                             collapsible = FALSE,
+                                             h4("Plot based on month for each year"),
+                                             plotOutput("plotmonth")
+                                           )
                                      )
                                      )
                                  )
-                                 )
+                               )
+                            )
+                            )
                             ,
                              tabPanel(
                                  "Modeling",
@@ -348,9 +396,11 @@ shinyUI(fluidPage(theme = "style.css",
                                         dashboardPage(
                                            dashboardHeader(title = "Modeling Information"),
                                            dashboardSidebar(
-                                             "This is the Modeling Information:
-                                             we want to fit the dataset using predictive models. Overall speaking, we want to model to have less MSE(mean square error)
-                                             MSE is measured by the bias + variance + irreducible error."
+                                             
+                                             "we want to fit the dataset using predictive models. Overall speaking, we want to model to have less MSE(mean square error)
+                                             MSE is measured by the bias + variance + irreducible error.",
+                                             h3("Note that here we want to model the response variable rating of the anime by other explantory varaibles and rating is a 
+                                                quantitative response, so we choose the models under regression setting.")
                                            ),
                                            dashboardBody(
                                              fluidRow(
@@ -589,30 +639,14 @@ shinyUI(fluidPage(theme = "style.css",
                                                    width = 12),width = 7)
                                              )
                                            )
+
+                                      )
+                                      ),
                                      
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   
-                                                   )),
+                                     
+                                     
+                                     
+                                     
                                      tabPanel(
                                          "Prediction",
                                          dashboardPage(
