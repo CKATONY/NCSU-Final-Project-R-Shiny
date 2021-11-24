@@ -16,37 +16,107 @@ library(caret)
 
 
 data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim =" ")
-# Define UI for application that draws a histogram
+
 shinyUI(fluidPage(theme = "style.css",
                   div(style = "padding: 1px 0px; width: '100%'",
                       titlePanel(
-                          title = "Exploring Animes and predicting Anime Rating from Kitsu WebSite",
+                          title = "Exploring Animes from Kitsu WebSite",
                           windowTitle = "Exploring Animes from Kitsu"
                       )
                   ),
                   navbarPage("Exploring Animes from Kitsu",
                              tabPanel(
                                  "About",
-                                 fluidRow(
-                                     column(
-                                         h2("Purpose of the App"),
-                                         br(),
-                                         p("......."),width = 5),
-                                     column(
-                                         h2("Data and Source"),width = 2
-                                     ),
-                                     column(
-                                         h2("Purpose of the tabs"),
-                                         br(),
-                                         width = 3
-                                     ),
-                                     column(
-                                         tags$img(src = "",width="200px",height="130px"),width = 2)
-                                     )
+                                 dashboardPage(
+                                   dashboardHeader(title = "About"),
+                                   dashboardSidebar(
+                                     "Description of this app"),
+                                   dashboardBody(
+                                     fluidRow(
+                                       column(
+                                         box(
+                                           title = "Purpose of the App", 
+                                           status = "primary",
+                                           solidHeader = TRUE,
+                                           collapsible = FALSE,
+                                           h4("This app explores the animes in Kitsu website. Users could change the functionality(preference) to obtain the information of the 
+                                           subseted data, see some exploratory data analysis based on the entire data set, fit some predictive models(supervised learning methods), and predict the rating of the anime 
+                                           based on the explanatory(predictors) values that are specified by users. 
+                                            
+                                      "),
+                                           
+                                         width = 15),width = 2),
+                                       column(
+                                         box(
+                                           title = "Data and Source", 
+                                           status = "info",
+                                           solidHeader = TRUE,
+                                           collapsible = FALSE,
+                                           h4("Data is obtained by accessing the Kitsu API. The more information of this API can be found",
+                                              tags$a(href= "https://kitsu.docs.apiary.io/#",
+                                                  "Here.")),
+                                           
+                                           h4("This API is built upon the Kitsu Website, Kitsu is a anime website that allows users to explore anime and manga.
+                                              You can access the Kitsu Website",tags$a(href= "https://kitsu.io/explore/anime",
+                                                  "Here.")),
+                                           h4("Animes used in this app is selected by top 300 ratings for each year from 2010 to 2022, "),
+                                           h4("Data used in this app is filtered with necessary attributes of anime. Variables include:"),
+                                           h4("1.Anime Name in English"),
+                                           h4("2.Anime Name in Japanese"),
+                                           h4("3.Rating of Anime"),
+                                           h4("4.Favorite Count of each Anime(if users like the anime, they hit the favorite tab)"),
+                                           h4("5.User Count(the users who have watched the animes)"),
+                                           h4("6.Airing Start Date and Airing End Date"),
+                                           h4("7.Popularity Rank"),
+                                           h4("8.Rating Rank"),
+                                           h4("9.Age Rating(category that provides suitable range of age for animes"),
+                                           h4("10.Age Rating Guide(provide age range)"),
+                                           h4("11.Toal Number of Episode of the Anime"),
+                                           h4("12.Total Length of Anime in Minutes"),
+                                           h4("13.Genre and Categories(genres of each anime"),
+                                           
+                                           
+                                           
+                                           
+                                           width = 12),width = 3),
+                                       column(
+                                         box(
+                                           title = "Purpose of the tabs", 
+                                           status = "danger",
+                                           solidHeader = TRUE,
+                                           collapsible = FALSE,
+                                           h4("You have 4 pages:"),
+                                              
+                                           h4(tags$span(style="color: blue;","About Page:"), "Discussion of the purpose of the app, data and its source and purpose of each tab"),
+                                              
+                                           h4(tags$span(style="color: blue;","Data Page:")," Subset the dataset based on your interest and save the dataset"),
+                                              
+                                           h4(tags$span(style="color: blue;","Data Exploration Page:"))  ,
+                                              
+                                           h4("1. Table Summary tab : Change the numerical summaries based on Year, Age Rating and Number of Episodes"),
+                                              
+                                           h4("2. Visualization tab : See the scatter plots (kmean clustering included) and bar plots based on interest"),
+                                           h4(tags$span(style="color: blue;","Modeling Page:")),
+                                           h4("1. Modleing info tab : See the information of models that will be used to fit the data"),
+                                           h4("2. Model Fitting tab : Fit the model based on interest"),
+                                           h4("3. Prediction tab : predict the response: rating based on the input values from you"),
+                                              
+                                              
+                                           
+                                           width = 12),width = 3),
+                                       column(
+                                         tags$img(src = "onepiece.jpg",width="500px",height="1200px"),width = 4)
+                                       
                                 
+                                    
+                                     
                                  
                                  
-                             ),
+                             )
+                             )
+                             )
+                             )
+                             ,
                              tabPanel(
                                  "Data",
                                  tabsetPanel(
@@ -462,7 +532,7 @@ shinyUI(fluidPage(theme = "style.css",
                                                                 selected = 3
                                                    ),
                                                    p("Note that random forest run slowly if the cv is large",style = "color:red"),
-                                                   h4("For this data set, we want to using fit the model with response variable: rating, rating ranges from 0 to 100, 100 denotes the perfect rating.
+                                                   h4("For this data set, we want to fit the model with response variable: rating, rating ranges from 0 to 100, 100 denotes the perfect rating.
                                                    we will have all appropriate explantory variables:
                                                       favorite count, user count, year, month, popularity rank, age rating, total episodes number, total length of anime in minutes"),
                                                    h4("before fitting the model, I set the categorical variable age_rating(3 categories) to be three numerical dummy variables, with each column have value (0,1) indicating whether 
