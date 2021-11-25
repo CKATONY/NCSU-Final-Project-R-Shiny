@@ -136,30 +136,6 @@ write_excel_csv(final_data,"C:\\Users\\CKA\\Desktop\\guitar\\anime_FinalInfo_fro
 
 want <- read_delim("C:/Users/CKA/Desktop/guitar/anime_FinalInfo_from_Kitsu_API.csv",delim = " ")
 
-G %>% group_by(year) %>% summarize(mean_rating = mean(rating),mean_user = mean(user_count),mean_favorite = mean(favorite_count))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

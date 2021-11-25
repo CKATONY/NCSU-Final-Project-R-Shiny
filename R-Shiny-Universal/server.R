@@ -20,59 +20,84 @@ data <- read_delim("anime_FinalInfo_from_Kitsu_API.csv",delim = " ")
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session){
 # data page 
-    output$Datatable1 <- DT::renderDataTable({
-       if(input$month == FALSE & input$age == FALSE){
-            data %>% filter(year == input$year)
-          
-        }
-        else if(input$month == FALSE & input$age == TRUE){
-            data %>% filter(year == input$year & age_rating == input$age_rating)
-          
-        }
-        else if(input$month == TRUE & input$age == FALSE){
-            data %>% filter(year == input$year & month == input$year_month)
-          
-        }
-        else if(input$month == TRUE & input$age == TRUE){
-            data %>% filter(year == input$year & month == input$year_month & age_rating == input$age_rating)
-          
-        }
-    },
-       options = list(scrollX = TRUE)
+    output$FullData <- DT::renderDataTable({
+      data},
+      options = list(scrollX = TRUE)
     )
+    
+    output$downloadData3 <- downloadHandler(
+      filename = function() {
+        paste("data-", Sys.Date(), ".csv", sep="")
+      },
+      content = function(file){
+        write.csv(data, file, row.names = FALSE)
+      }
+    )
+    
+      
+    subsetData <- data
+    getData <- reactive({
+        subsetData
+    })
+    
+    tableData <- reactive({
+      if(input$month == FALSE & input$age == FALSE){
+        getData() %>% filter(year == input$year)
+        
+      }
+      else if(input$month == FALSE & input$age == TRUE){
+        getData() %>% filter(year == input$year & age_rating == input$age_rating)
+        
+      }
+      else if(input$month == TRUE & input$age == FALSE){
+        getData() %>% filter(year == input$year & month == input$year_month)
+        
+      }
+      else if(input$month == TRUE & input$age == TRUE){
+        getData() %>% filter(year == input$year & month == input$year_month & age_rating == input$age_rating)
+      }
+    })
+    
+    output$Datatable1 <- DT::renderDataTable({
+      tableData()},
+      options = list(scrollX = TRUE)
+    )
+    
+    
     
     output$downloadData <- downloadHandler(
-        filename = function() {
-            paste(input$year, ".csv", sep = "")
-        },
-        content = function(file){
-            write.csv(Datatable1, file, row.names = FALSE)
-        }
+      filename = function() {
+        paste("Anime-subset-", Sys.Date(), ".csv", sep="")
+      },
+      content = function(file){
+        write.csv(tableData(), file, row.names = FALSE)
+      }
     )
+
     
-    
-    
+    tableData2 <- reactive({
+      getData() %>% filter( Categories %in% input$genre | Genres %in% input$genre ) %>% filter(rating >= input$rank)
+    })
     
     output$Datatable2 <- DT::renderDataTable({
-        B <-data[order(data$rating,decreasing = TRUE),]
-        B %>% filter(Categories %in% input$genre|Genres %in% input$genre)%>% top_n(input$rank, rating)
-        
-    },
-        options = list(scrollX = TRUE)
+      tableData2()},
+      options = list(scrollX = TRUE)
     )
     
-    
-    
-    
-    output$downloadData <- downloadHandler(
+        #B <-data[order(data$rating,decreasing = TRUE),]
+    output$downloadData2 <- downloadHandler(
         filename = function() {
-            paste(input$year, ".csv", sep = "")
+            paste("Anime-subset-", Sys.Date(), ".csv", sep="")
         },
         content = function(file){
-            write.csv(Datatable1, file, row.names = FALSE)
-            
+            write.csv(tableData2(), file, row.names = FALSE)
         }
     )
+    
+    
+    
+    
+    
     # data exploration page 
     output$Datatable3 <- renderDataTable({
         new <- na.omit(data)

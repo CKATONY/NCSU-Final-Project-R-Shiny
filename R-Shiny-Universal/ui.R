@@ -121,7 +121,25 @@ shinyUI(fluidPage(theme = "style.css",
                                  "Data",
                                  tabsetPanel(
                                      type = "tabs",
-                                     
+                                     tabPanel(
+                                       "Whole Data Set",
+                                       dashboardPage(
+                                         dashboardHeader(title = "Whole Data"),
+                                         dashboardSidebar(
+                                           "This is full data set"),
+                                         dashboardBody(
+                                           fluidRow(
+                                             column(
+                                               downloadButton("downloadData3", "Download")
+                                             ,width = 2),
+                                             column(
+                                               DT::dataTableOutput("FullData")
+                                             ,width = 10)
+                                           )
+                                         )
+                                       )
+                                     ),
+                                       
                                      tabPanel(
                                          "Select Animes You Like",
                                          dashboardPage(
@@ -172,28 +190,25 @@ shinyUI(fluidPage(theme = "style.css",
                                          dashboardPage(
                                            dashboardHeader(title = "Subset the Data"),
                                            dashboardSidebar(
-                                             "You can select the anime based on the rating rank"),
+                                             "You can select the anime based on the Genre, and get animes with rating under certain range within this genre"),
                                            dashboardBody(
                                              fluidRow(
                                                column(
-                                                 
-                                                   h3("Select the anime based on the rating rank"),
-                                                   pickerInput(inputId = "rank",
-                                                               label = "Ranking",
-                                                               choices = c(1,10,20,30,40,50,60,70,80,90,100),
-                                                               selected = 1
-                                                   ),
-                                                   
-                                                   
-                                                   h3("Based on Genre"),
-                                                   radioButtons(inputId = "genre",
+                                                  h3("Based on Genre"),
+                                                    radioButtons(inputId = "genre",
                                                                 label = "Categories",
-                                                                choices = c("Fantasy", "Magic","Action", "Comedy", "School Life","Science Fiction","Romance","Horror",
+                                                                choices = c("Fantasy", "Magic","Action", "Comedy", "School Life","Science Fiction","Romance","Crime",
                                                                             "Adventure","Music","Drama","Slice of Life","Sports",'Historical',"Mystery"),
                                                                 selected = "Fantasy"
-                                                   ),
-                                                   downloadButton("downloadData2", "Download")
-                                                 ,width = 2),
+                                                    ),
+                                                  h3("Select the anime based on the rating"),
+                                                  pickerInput(inputId = "rank",
+                                                               label = "Rating Greater than",
+                                                               choices = c(80,70,60,50),
+                                                               selected = 80
+                                                  ),
+                                                  downloadButton("downloadData2", "Download"),
+                                                  width = 2),
                                                
                                                column(
                                                  
@@ -399,7 +414,7 @@ shinyUI(fluidPage(theme = "style.css",
                                              
                                              "we want to fit the dataset using predictive models. Overall speaking, we want to model to have less MSE(mean square error)
                                              MSE is measured by the bias + variance + irreducible error.",
-                                             h3("Note that here we want to model the response variable rating of the anime by other explantory varaibles and rating is a 
+                                             h3("Note that here we want to model the response variable rating of the anime with some explantory varaibles. Rating is a 
                                                 quantitative response, so we choose the models under regression setting.")
                                            ),
                                            dashboardBody(
