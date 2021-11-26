@@ -1,16 +1,11 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+
 
 library(shiny)
 library(tidyverse)
 library(shinyWidgets)
 library(factoextra)
+library(randomForest)
+library(elasticnet)
 library(shinydashboard)
 library(caret)
 
@@ -128,6 +123,7 @@ shinyUI(fluidPage(theme = "style.css",
                                          dashboardSidebar(
                                            "This is full data set"),
                                          dashboardBody(
+                                           
                                            fluidRow(
                                              column(
                                                downloadButton("downloadData3", "Download")
