@@ -2,22 +2,24 @@
 
 This is NCSU st558 final project, creating dynamic R shiny app.  
 
-This R shiny App explores anime from Kitsu website. Kitsu website is a very useful source to look for anime that you may like (based on your preference)  
+This R shiny App explores anime from Kitsu website. Kitsu website is a very useful source to look for anime that you may like (based on your preference).  
 
-Kitsu website have averagely over 610,000 visits every month and The most visitors come from the United States  
+Kitsu website has averagely over 610,000 visits every month and most visitors come from the United States.  
 
-You can access the Kitsu website [here](https://kitsu.io/explore/anime)  
+You can access the Kitsu website [here](https://kitsu.io/explore/anime).  
 
-The data set used in this app is obtained from Kitsu API. You can see more details about this API [here](https://kitsu.docs.apiary.io/#)  
+The data set used in this app is obtained from Kitsu API. You can see more details about this API [here](https://kitsu.docs.apiary.io/#).  
 
 I choose to get top 300 rating anime from year 2010 to 2022 (2022 has few upcoming animes), the rating scores are rated by users in this website.  
 
 ## Purpose of this app 
-Anime lovers sometimes are looking for anime with high ratings. This app allows you to explore anime(basically all Japanese anime) by subsetting the data set plots, summary statistics and some predictive model based on the rating and some other attributes of anime(year, month released popularity rank, age rating guide, episodes numbers, etc...)  
+Anime lovers are sometimes looking for anime with high ratings. This app allows you to explore anime(basically all Japanese anime) by subsetting the data set plots, summary statistics and some predictive model based on the rating and some other attributes of anime(year, month released popularity rank, age rating guide, episodes numbers, etc...)  
 
 The functionality of this app provides you a comprehensive exploration of how some attributes could potentially affect rating scores. A simple example here: anime that fall in different age rating guide category may have different rating because the audiences may vary.  
 
-The predictive models introduced in this app may not be good and there are definitely some correlations between some attributes(like popularity rank and user counts variables). But it is not the main purpose of this app. This app is developed to let users better understand how anime are favored by users from Kitsu website and how the attributes of anime could potentially explain the rating scores.  
+The predictive models introduced in this app may not be perfect and there are definitely some correlations between some attributes(like popularity rank and user counts variables). But it is not the main purpose of this app. This app is developed to let users better understand how anime are favored by users from Kitsu website and how the attributes of anime could potentially explain the rating scores.  
+
+Detailed descriptions of this app can be found on the About page once you successfully open it.
 
 ## R Packages Used 
 
@@ -33,8 +35,9 @@ The predictive models introduced in this app may not be good and there are defin
 ### Install the packages:
 
 Use the code in R:  
+
 install.packages(c("shiny","tidyverse","shinyWidgets","factoextra","shinydashboard","randomForest","caret","elasticnet"))  
-if you want to install the individual package, just use install.package("any package you don't have in your R")  
+if you want to install the individual package, just use install.packages("any package you don't have in your R")  
 
 After the installations, you can load those packages using:  
 
