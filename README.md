@@ -32,26 +32,29 @@ The predictive models introduced in this app may not be good and there are defin
 
 ### Install the packages:
 
-Use the code:  
+Use the code in R:  
 install.packages(c("shiny","tidyverse","shinyWidgets","factoextra","shinydashboard","randomForest","caret","elasticnet"))  
 if you want to install the individual package, just use install.package("any package you don't have in your R")  
 
 After the installations, you can load those packages using:  
 
+library(caret)  
 library(shiny)  
 library(tidyverse)  
-library(shinyWidgets)  
 library(factoextra)  
-library(shinydashboard)  
-library(randomForest)  
-library(caret)  
 library(elasticnet)  
+library(randomForest)  
+library(shinyWidgets)  
+library(shinydashboard)  
+
+
+
 
 
 ## How to Run this app:
 
-_please have all packages installed and loaded before running this app_  
-Use codes here to run this app:  
+*_please have all packages installed and loaded before running this app_*  
+Use codes here to run this app in R:  
 
 shiny::runGitHub(repo = "NCSU-Final-Project-R-Shiny",
                  username = "CKATONY",
