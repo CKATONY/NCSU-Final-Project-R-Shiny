@@ -432,7 +432,8 @@ shinyUI(fluidPage(theme = "style.css",
                                                "The modeling equation for the multiple linear regression is
                                                         $$Y = \\beta_0+\\beta_1*X_1+\\beta_2*X_2+\\beta_3*X_3+\\beta_4*X_4+\\beta_5*X_5...$$",
                                                "notice that here the multiple linear regression model have simple interpretation of 
-                                               relationship between X's and Y, the order of X's is 1",
+                                               relationship between X's and Y, the order of X's is 1. We want to find the representation of the linear combination of explanatory variables(X) that can explain response variables(Y)
+                                               as much as possible",
                                                br(),
                                                br(),
                                                "however, this method have some drawbacks:",
@@ -550,7 +551,8 @@ shinyUI(fluidPage(theme = "style.css",
                                                br(),
                                                "Ridge regression definitely improve the accuracy of the model fitting if there are variables that have less impact on the model, it works better
                                                when the least squares method have high variance, it also has a computational advantage over other variable selection method to reduce the dimension of the data
-                                               But unfortunately, it will only set the coeffcient estimates to be close to 0, it did not perform variable selection",
+                                               But unfortunately, it will only set the coeffcient estimates to be close to 0, it does perform variable selection. When the tuning parameter stated above is close to 0, there is 
+                                               not much difference between linear regression and ridge regression",
                                                width = 12),width = 3
                                               )
                                              
@@ -744,27 +746,18 @@ shinyUI(fluidPage(theme = "style.css",
                                                    
                                                    width = 12),width = 10
                                                )
-                                               )
+                                              )
                                              )
                                            
                                            )
                                      )
                                  )
+                               )
                              )
-                             
-                             
-                             
-                             
-                             
-                             
-                             )
+
+    
                   
-                                       
-                      
-                      
- 
-    # Application title
-   
+                  
 ))
 
 

@@ -226,6 +226,28 @@ shinyServer(function(input, output,session){
     })
     
     
+    
+    
+    
+    
+    
+    #data cleaning before the model fitting 
+    get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
+    # convert the age rating into numeric columns. 
+    dummies <- dummyVars(rating ~ age_rating,data = get)
+    pre<-predict(dummies, newdata = get)
+    Z <- cbind(get,pre)
+    final2 <- Z %>% select(-age_rating)
+    last <- abs(final2)
+    # data cleaning to get final data set:
+    set.seed(123)
+    final <- na.omit(last)
+    rows <- sample(nrow(final))
+    final <- final[rows, ]
+    
+    
+    
+    
  # create the event reactive that will only change the response when we select different input after hit the action botton    
     splitinput <- eventReactive(input$press,{ input$split})
     variableinput <- eventReactive(input$press,{input$variable})
@@ -234,20 +256,6 @@ shinyServer(function(input, output,session){
 # deliver the response using observe event 
     observeEvent(input$press,{
       output$Multiple <- renderPrint({
-        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
-        # convert the age rating into numeric columns. 
-        dummies <- dummyVars(rating ~ age_rating,data = get)
-        pre<-predict(dummies, newdata = get)
-        Z <- cbind(get,pre)
-        final2 <- Z %>% select(-age_rating)
-        last <- abs(final2)
-        # data cleaning to get final data set:
-        set.seed(123)
-        final <- na.omit(last)
-        rows <- sample(nrow(final))
-        final <- final[rows, ]
-        
-        
         train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(splitinput()), list = F)
         train.sub <- final[train.index.sub, ] # training set
         test.sub <- final[-train.index.sub, ] # test set
@@ -280,22 +288,9 @@ shinyServer(function(input, output,session){
     })
    
        
-        
-   
+      
     observeEvent(input$press,{
         output$Tree <- renderPrint({
-          get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
-          # convert the age rating into numeric columns. 
-          dummies <- dummyVars(rating ~ age_rating,data = get)
-          pre<-predict(dummies, newdata = get)
-          Z <- cbind(get,pre)
-          final2 <- Z %>% select(-age_rating)
-          last <- abs(final2)
-          # data cleaning to get final data set:
-          set.seed(123)
-          final <- na.omit(last)
-          rows <- sample(nrow(final))
-          final <- final[rows, ]
           train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(splitinput()), list = F)
           train.sub <- final[train.index.sub, ] # training set
           test.sub <- final[-train.index.sub, ] # test set
@@ -327,18 +322,6 @@ shinyServer(function(input, output,session){
     })
     observeEvent(input$press,{   
       output$Random <- renderPrint({
-          get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
-          # convert the age rating into numeric columns. 
-          dummies <- dummyVars(rating ~ age_rating,data = get)
-          pre<-predict(dummies, newdata = get)
-          Z <- cbind(get,pre)
-          final2 <- Z %>% select(-age_rating)
-          last <- abs(final2)
-          # data cleaning to get final data set:
-          set.seed(123)
-          final <- na.omit(last)
-          rows <- sample(nrow(final))
-          final <- final[rows, ]
           train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(splitinput()), list = F)
           train.sub <- final[train.index.sub, ] # training set
           test.sub <- final[-train.index.sub, ] # test set
@@ -374,18 +357,6 @@ shinyServer(function(input, output,session){
     
     observeEvent(input$press,{
       output$Random2 <- renderPlot({
-        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
-        # convert the age rating into numeric columns. 
-        dummies <- dummyVars(rating ~ age_rating,data = get)
-        pre<-predict(dummies, newdata = get)
-        Z <- cbind(get,pre)
-        final2 <- Z %>% select(-age_rating)
-        last <- abs(final2)
-        # data cleaning to get final data set:
-        set.seed(123)
-        final <- na.omit(last)
-        rows <- sample(nrow(final))
-        final <- final[rows, ]
         train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(splitinput()), list = F)
         train.sub <- final[train.index.sub, ] # training set
         test.sub <- final[-train.index.sub, ] # test set
@@ -426,18 +397,6 @@ shinyServer(function(input, output,session){
       
     observeEvent(input$press,{  
       output$Ridge <- renderPrint({
-        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
-        # convert the age rating into numeric columns. 
-        dummies <- dummyVars(rating ~ age_rating,data = get)
-        pre<-predict(dummies, newdata = get)
-        Z <- cbind(get,pre)
-        final2 <- Z %>% select(-age_rating)
-        last <- abs(final2)
-        # data cleaning to get final data set:
-        set.seed(123)
-        final <- na.omit(last)
-        rows <- sample(nrow(final))
-        final <- final[rows, ]
         train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(splitinput()), list = F)
         train.sub <- final[train.index.sub, ] # training set
         test.sub <- final[-train.index.sub, ] # test set
@@ -471,18 +430,6 @@ shinyServer(function(input, output,session){
     
     observeEvent(input$press,{  
       output$AllStats <- renderDataTable({
-        get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
-        # convert the age rating into numeric columns. 
-        dummies <- dummyVars(rating ~ age_rating,data = get)
-        pre<-predict(dummies, newdata = get)
-        Z <- cbind(get,pre)
-        final2 <- Z %>% select(-age_rating)
-        last <- abs(final2)
-        # data cleaning to get final data set:
-        set.seed(123)
-        final <- na.omit(last)
-        rows <- sample(nrow(final))
-        final <- final[rows, ]
         train.index.sub <- createDataPartition(y = final$rating, p = as.numeric(splitinput()), list = F)
         train.sub <- final[train.index.sub, ] # training set
         test.sub <- final[-train.index.sub, ] # test set
@@ -579,18 +526,6 @@ shinyServer(function(input, output,session){
       
   observeEvent(input$pred,{  
     output$values <- renderDataTable({
-      get <- data %>% select(c(rating,favorite_count,popularity_rank,month,year,user_count,age_rating,total_episode,total_length))
-      # convert the age rating into numeric columns. 
-      dummies <- dummyVars(rating ~ age_rating,data = get)
-      pre<-predict(dummies, newdata = get)
-      Z <- cbind(get,pre)
-      final2 <- Z %>% select(-age_rating)
-      last <- abs(final2)
-      # data cleaning to get final data set:
-      set.seed(123)
-      final <- na.omit(last)
-      rows <- sample(nrow(final))
-      final <- final[rows, ]
       train.index.sub <- createDataPartition(y = final$rating, p = 0.7, list = F)
       train.sub <- final[train.index.sub, ] # training set
       test.sub <- final[-train.index.sub, ] # test set
